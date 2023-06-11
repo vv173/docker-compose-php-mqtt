@@ -8,6 +8,9 @@ use PhpMqtt\Client\ConnectionSettings;
 $server = 'localhost'; // Replace with your MQTT broker's address
 $mqtt_port = 1883; // Replace with the MQTT broker's port
 $clean_session = false;
+$qos = 2;
+$topic = 'security';
+$last_will_topic = 'security';
 
 // MySQL database configuration
 $host = '192.168.1.101';
@@ -39,15 +42,21 @@ $password = 'test';
 
 // Create connection settings with username and password
 $settings = new ConnectionSettings();
-$settings->setUsername($username);
-$settings->setPassword($password);
+$settings
+    ->setUsername($username)
+    ->setPassword($password)
+    ->setKeepAliveInterval(60)
+    ->setLastWillTopic($last_will_topic)
+    ->setLastWillMessage('client disconnect')
+    ->setLastWillQualityOfService($qos);
+
 
 // Connect to the MQTT broker with connection settings
 $client = new MqttClient($server, $mqtt_port, 'subscriber');
 $client->connect($settings, $clean_session);
 
 // Subscribe to the 'messages' topic
-$client->subscribe('messages', function (string $topic, string $message) use ($pdo) {
+$client->subscribe($topic, function (string $received_topic, string $message) use ($pdo) {
     echo "Received message: $message\n";
 
      // Insert the received message into the database

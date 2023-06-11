@@ -8,6 +8,7 @@ use PhpMqtt\Client\ConnectionSettings;
 $server = 'localhost'; // Replace with your MQTT broker's address
 $port = 1883; // Replace with the MQTT broker's port
 $clean_session = false;
+$topic = 'security';
 
 // MQTT broker login credentials
 $username = 'test';
@@ -31,7 +32,7 @@ while (true) {
     }
 
     // Publish the message to a topic named 'messages'
-    $client->publish('messages', $message);
+    $client->publish($topic, $message);
 }
 
 // Disconnect from the MQTT broker
